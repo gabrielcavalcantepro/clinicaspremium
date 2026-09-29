@@ -1271,7 +1271,6 @@ main > section:not(.hero) {
   align-items: center;
   justify-content: center;
   height: 100vh;
-  height: 100svh;   /* altura estável no iPhone/Android */
   padding-top: var(--stage-top, 88px);
   padding-bottom: 24px;
 }
@@ -1297,28 +1296,6 @@ main > section:not(.hero) {
 
 .how.is-pinned .section-cta {
   margin-top: 44px;
-}
-
-/* Modo "só o funil" (celular): o funil gruda abaixo do cabeçalho enquanto o
-   espaço extra do quadro (--pin-extra) rola; o título da seção rola normal. */
-/* Espaço de rolagem como conteúdo (e não padding): o funil fixo só pode
-   percorrer a área de conteúdo do quadro */
-.how.is-pin-funnel .how__frame::after {
-  content: "";
-  display: block;
-  height: var(--pin-extra, 0px);
-}
-
-.how.is-pin-funnel .funnel {
-  position: sticky;
-  top: var(--stage-top, 88px);
-  transform: scale(var(--fit, 1));
-  transform-origin: top center;
-}
-
-.how.is-pin-funnel .funnel__content {
-  padding-top: 16px;
-  padding-bottom: 18px;
 }
 
 /* ---------- 6. Com x Sem ---------- */

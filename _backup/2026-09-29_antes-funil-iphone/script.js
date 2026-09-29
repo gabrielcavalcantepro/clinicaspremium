@@ -201,33 +201,11 @@ const CONFIG = {
     effortObserver.observe(effort);
   }
 
-  /* ---------- Altura estável da tela ----------
-     No iPhone/Android a barra do navegador aparece e some durante a rolagem e
-     dispara "resize". Refazer medições nesses momentos mudava a altura da página
-     e fazia a rolagem pular. Em telas de toque, só remede quando a largura muda
-     (ex.: girar o aparelho). */
-
-  const coarsePointer = window.matchMedia('(pointer: coarse)').matches;
-  let stableVH = window.innerHeight;
-  let stableW = window.innerWidth;
-
-  function onStableResize(fn) {
-    window.addEventListener('resize', function () {
-      if (coarsePointer && window.innerWidth === stableW) return;
-      stableW = window.innerWidth;
-      stableVH = window.innerHeight;
-      fn();
-    });
-  }
-
   /* ---------- Funil "Como funciona": etapas surgem com a rolagem ----------
      Cada etapa aparece primeiro só com o título e, na sequência, com o parágrafo.
-     - Desktop (seção cabe na tela): a seção inteira fica fixa enquanto a rolagem
-       avança os 8 passos.
-     - Celular (ou seção alta demais): fica fixo só o funil; o título da seção
-       rola normalmente acima dele.
-     - Se nem o funil couber: sem fixar; cada etapa se revela ao entrar na tela.
-     Depois do último passo, a página volta a rolar normalmente. */
+     Desktop (seção cabe na tela): a seção inteira fica fixa enquanto a rolagem
+     avança os 8 passos; depois do último, a página volta a rolar normalmente.
+     Mobile ou tela baixa: sem fixar; cada etapa se revela ao entrar na tela. */
 
   const how = document.querySelector('.how');
   const track = document.querySelector('[data-funnel-track]');
@@ -238,11 +216,9 @@ const CONFIG = {
     const steps = Array.prototype.slice.call(funnel.querySelectorAll('.funnel__step'));
     const REVEALS = steps.length * 2;   // título + parágrafo de cada etapa
     const STEP_SCROLL = 0.28;           // fração da altura da tela por passo
-    const START_AT = 0.25;              // começa um pouco antes de fixar
+    const START_AT = 0.25;              // começa quando a seção chega a 25% do topo
     const STAGE_TOP = 88;               // espaço do cabeçalho flutuante
-    let mode = 'flow';                  // 'section' | 'funnel' | 'flow'
-    let pinExtra = 0;
-    let funnelOffset = 0;
+    let pinned = false;
     let ticking = false;
 
     function setRevealCount(count) {
@@ -252,13 +228,8 @@ const CONFIG = {
       });
     }
 
-    function countFrom(progress) {
-      /* REVEALS + 1 fatias: a última segura o funil completo antes de soltar */
-      return progress <= 0 ? 0 : Math.min(REVEALS, Math.floor(progress * (REVEALS + 1)) + 1);
-    }
-
     function layout() {
-      const vh = stableVH;
+      const vh = window.innerHeight;
 
       /* Título centralizado na faixa até o parágrafo aparecer
          (primeiro todas as leituras, depois todas as escritas) */
@@ -268,56 +239,33 @@ const CONFIG = {
       });
       steps.forEach(function (step, i) { step.style.setProperty('--shift', shifts[i] + 'px'); });
 
-      how.style.setProperty('--stage-top', STAGE_TOP + 'px');
+      /* Mede a seção no layout fixo e escala para caber na tela;
+         abaixo de 85% o texto ficaria pequeno, então não fixa */
+      how.classList.add('is-pinned');
       how.style.setProperty('--fit', '1');
-      mode = 'flow';
-      let fit = 1;
+      const cta = how.querySelector('.section-cta');
+      const ctaSpace = cta ? cta.offsetHeight + parseFloat(getComputedStyle(cta).marginTop) : 0;
+      const fit = Math.min(1, (vh - STAGE_TOP - 24 - ctaSpace) / frame.offsetHeight);
+      pinned = window.innerWidth >= 720 && fit >= 0.85;
 
-      /* 1) Desktop: seção inteira; abaixo de 85% o texto ficaria pequeno */
-      if (window.innerWidth >= 720) {
-        how.classList.add('is-pinned');
-        const cta = how.querySelector('.section-cta');
-        const ctaSpace = cta ? cta.offsetHeight + parseFloat(getComputedStyle(cta).marginTop) : 0;
-        fit = Math.min(1, (vh - STAGE_TOP - 24 - ctaSpace) / frame.offsetHeight);
-        if (fit >= 0.85) mode = 'section';
-        else how.classList.remove('is-pinned');
-      }
-
-      /* 2) Só o funil (celular ou seção alta demais) */
-      if (mode === 'flow') {
-        how.classList.add('is-pin-funnel');
-        fit = Math.min(1, (vh - STAGE_TOP - 16) / funnel.offsetHeight);
-        if (fit >= 0.8) {
-          mode = 'funnel';
-          /* Distância do topo do quadro até o funil (título + margem), que não
-             muda quando o funil está fixo */
-          const head = frame.querySelector('.how__head');
-          funnelOffset = (head ? head.offsetHeight : 0) + parseFloat(getComputedStyle(funnel).marginTop);
-        } else {
-          how.classList.remove('is-pin-funnel');
-        }
-      }
-
-      pinExtra = Math.round(vh * STEP_SCROLL * (REVEALS + 1));
-      how.style.setProperty('--fit', mode === 'flow' ? '1' : fit.toFixed(3));
-      how.style.setProperty('--track-h', mode === 'section' ? Math.round(vh + pinExtra) + 'px' : 'auto');
-      how.style.setProperty('--pin-extra', mode === 'funnel' ? pinExtra + 'px' : '0px');
-      requestAnimationFrame(update);
+      how.classList.toggle('is-pinned', pinned);
+      how.style.setProperty('--fit', pinned ? fit.toFixed(3) : '1');
+      how.style.setProperty('--stage-top', STAGE_TOP + 'px');
+      how.style.setProperty('--track-h', pinned ? Math.round(vh * (1 + STEP_SCROLL * (REVEALS + 1))) + 'px' : 'auto');
+      update();
     }
 
     function update() {
       ticking = false;
-      const vh = stableVH;
+      const vh = window.innerHeight;
 
-      if (mode === 'section') {
+      if (pinned) {
         const rect = track.getBoundingClientRect();
         const distance = rect.height - vh + vh * START_AT;
-        setRevealCount(countFrom((vh * START_AT - rect.top) / distance));
-      } else if (mode === 'funnel') {
-        /* Posição natural do funil (sem o efeito de fixar), a partir do quadro */
-        const naturalTop = frame.getBoundingClientRect().top + funnelOffset;
-        const lead = vh * START_AT;
-        setRevealCount(countFrom((STAGE_TOP + lead - naturalTop) / (pinExtra + lead)));
+        const progress = (vh * START_AT - rect.top) / distance;
+        /* REVEALS + 1 fatias: a última segura o funil completo antes de soltar */
+        const count = progress <= 0 ? 0 : Math.min(REVEALS, Math.floor(progress * (REVEALS + 1)) + 1);
+        setRevealCount(count);
       } else {
         steps.forEach(function (step) {
           const top = step.getBoundingClientRect().top;
@@ -337,10 +285,7 @@ const CONFIG = {
     how.classList.add('is-animated');
     afterLoad(layout);
     window.addEventListener('scroll', onScroll, { passive: true });
-    onStableResize(function () {
-      how.classList.remove('is-pinned', 'is-pin-funnel');
-      layout();
-    });
+    window.addEventListener('resize', layout);
   }
 
   /* ---------- Dúvidas frequentes: entrada em sequência e abrir/fechar suave ----------
@@ -730,7 +675,7 @@ void main() {
     let heroTicking = false;
 
     function heroLayout() {
-      const vh = stableVH;
+      const vh = window.innerHeight;
       const heroH = hero.offsetHeight;
       const stickScroll = Math.max(0, heroH - vh);
       /* Posição natural do hero (a do próprio hero muda enquanto ele está fixo) */
@@ -761,7 +706,7 @@ void main() {
 
     if (!reduceMotion) hero.classList.add('is-exit-ready');
     afterLoad(heroLayout);
-    onStableResize(heroLayout);
+    window.addEventListener('resize', heroLayout);
     window.addEventListener('scroll', function () {
       if (!heroTicking) {
         heroTicking = true;
