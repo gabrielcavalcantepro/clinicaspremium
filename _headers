@@ -1,0 +1,15 @@
+# Cloudflare Pages: cabeçalhos de cache
+# Imagens, vídeo, CSS e JS ficam 1 ano em cache. Ao trocar um arquivo, mude o
+# nome (imagens/vídeo) ou o ?v= no index.html (CSS/JS) para o navegador baixar de novo.
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/
+  Cache-Control: public, max-age=0, must-revalidate

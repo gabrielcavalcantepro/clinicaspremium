@@ -25,13 +25,12 @@
   <meta name="twitter:image" content="https://SEU-DOMINIO.com.br/assets/og-image.jpg">
   <link rel="canonical" href="https://SEU-DOMINIO.com.br/">
 
-  <link rel="icon" href="assets/logo-74.webp" type="image/webp">
-  <link rel="preload" href="assets/logo-74.webp" as="image" type="image/webp" imagesrcset="assets/logo-74.webp 2x, assets/logo-111.webp 3x">
-  <!-- style.min.css e script.min.js são versões compactadas geradas a partir de style.css e script.js -->
-  <link rel="stylesheet" href="style.min.css?v=30">
+  <link rel="icon" href="assets/logo.webp" type="image/webp">
+  <link rel="preload" href="assets/logo.webp" as="image" type="image/webp">
+  <link rel="stylesheet" href="style.css?v=29">
 
   <!-- Meta Pixel, Google Ads e GA4 são carregados pelo script.js a partir dos IDs em CONFIG -->
-  <script src="script.min.js?v=31" defer></script>
+  <script src="script.js?v=29" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -39,7 +38,7 @@
   <header class="site-header">
     <nav class="nav" aria-label="Navegação principal">
       <a class="nav__brand" href="#topo" aria-label="Clínicas Premium, voltar ao início">
-        <img src="assets/logo-74.webp" srcset="assets/logo-74.webp 2x, assets/logo-111.webp 3x" width="37" height="40" alt="Clínicas Premium">
+        <img src="assets/logo.webp" width="37" height="40" alt="Clínicas Premium">
       </a>
       <div class="nav__actions">
         <!-- Destino definido em CONFIG (script.js): whatsappNumber e whatsappMessage -->
@@ -90,12 +89,11 @@
             <!--
               VÍDEO DO CASE: assets/case-hugo-pollan.mp4 (vertical 720x1280, ~51 s, faststart).
               Sem capa: o "#t=0.001" faz o navegador mostrar o primeiro quadro, inclusive no iOS.
-            Carregamento sob demanda: o script.js só define o src quando a seção se aproxima da tela.
               Se o arquivo faltar, o estado vazio abaixo aparece automaticamente.
             -->
             <div class="player is-empty" data-player>
-              <video class="player__video" controls playsinline preload="none" width="720" height="1280" aria-label="Depoimento em vídeo do Dr. Hugo Pollan">
-                <source data-src="assets/case-hugo-pollan.mp4#t=0.001" type="video/mp4">
+              <video class="player__video" controls playsinline preload="metadata" width="720" height="1280" aria-label="Depoimento em vídeo do Dr. Hugo Pollan">
+                <source src="assets/case-hugo-pollan.mp4#t=0.001" type="video/mp4">
               </video>
               <div class="player__empty" role="img" aria-label="Vídeo do case em breve">
                 <span class="player__ring" aria-hidden="true">
@@ -109,7 +107,7 @@
           <figure class="case__figure case__figure--shot reveal">
             <!-- Print de resultado: assets/resultado-helio-souza.webp (720x1390) -->
             <div class="shot">
-              <img src="assets/resultado-helio-souza-600.webp" srcset="assets/resultado-helio-souza-360.webp 360w, assets/resultado-helio-souza-600.webp 600w, assets/resultado-helio-souza.webp 720w" sizes="(min-width: 900px) 350px, 322px" width="720" height="1390" alt="Print de conversa no WhatsApp em que o Dr. Hélio conta que bateu 40.650 no dia e agradece o trabalho em conjunto" loading="lazy" decoding="async">
+              <img src="assets/resultado-helio-souza.webp" width="720" height="1390" alt="Print de conversa no WhatsApp em que o Dr. Hélio conta que bateu 40.650 no dia e agradece o trabalho em conjunto" loading="lazy" decoding="async">
             </div>
             <figcaption class="case__caption"><span class="case__name">Dr. Hélio Souza</span>, Dentista</figcaption>
           </figure>
@@ -322,7 +320,7 @@
         <div class="consultant__card reveal">
           <div class="consultant__photo">
             <!-- Foto: assets/consultor.webp (recorte 4:5 centralizado no expert) -->
-            <img src="assets/consultor-560.webp" srcset="assets/consultor-440.webp 440w, assets/consultor-560.webp 560w, assets/consultor.webp 819w" sizes="(min-width: 960px) 440px, 320px" width="819" height="1024" alt="Foto de Isaque Rodrigues" loading="lazy" decoding="async">
+            <img src="assets/consultor.webp" width="819" height="1024" alt="Foto de Isaque Rodrigues" loading="lazy" decoding="async">
           </div>
 
           <div class="consultant__info">

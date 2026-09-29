@@ -29,19 +29,6 @@ const CONFIG = {
 (function () {
   'use strict';
 
-  /* Adia medições e efeitos para depois do carregamento e do primeiro quadro,
-     para não competirem com a renderização inicial (desempenho / PageSpeed). */
-  function afterLoad(fn) {
-    function go() { requestAnimationFrame(function () { requestAnimationFrame(fn); }); }
-    if (document.readyState === 'complete') go();
-    else window.addEventListener('load', go, { once: true });
-  }
-
-  function whenIdle(fn) {
-    if ('requestIdleCallback' in window) window.requestIdleCallback(fn, { timeout: 2000 });
-    else setTimeout(fn, 300);
-  }
-
   /* ---------- Rastreamento (Meta Pixel, GA4, Google Ads) ---------- */
 
   function loadMetaPixel(id) {
@@ -231,13 +218,12 @@ const CONFIG = {
     function layout() {
       const vh = window.innerHeight;
 
-      /* Título centralizado na faixa até o parágrafo aparecer
-         (primeiro todas as leituras, depois todas as escritas) */
-      const shifts = steps.map(function (step) {
+      /* Título centralizado na faixa até o parágrafo aparecer */
+      steps.forEach(function (step) {
         const desc = step.querySelector('.funnel__desc');
-        return desc ? (desc.offsetHeight + parseFloat(getComputedStyle(desc).marginTop)) / 2 : 0;
+        const offset = desc ? (desc.offsetHeight + parseFloat(getComputedStyle(desc).marginTop)) / 2 : 0;
+        step.style.setProperty('--shift', offset + 'px');
       });
-      steps.forEach(function (step, i) { step.style.setProperty('--shift', shifts[i] + 'px'); });
 
       /* Mede a seção no layout fixo e escala para caber na tela;
          abaixo de 85% o texto ficaria pequeno, então não fixa */
@@ -283,7 +269,7 @@ const CONFIG = {
     }
 
     how.classList.add('is-animated');
-    afterLoad(layout);
+    layout();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', layout);
   }
@@ -387,17 +373,6 @@ const CONFIG = {
     alphaMode: 'luminance'
   };
 
-  /* No celular o brilho dos anéis (que fica nas laterais de cada arco) é girado
-     90°: os arcos aparecem acima e abaixo do texto, onde há espaço na tela
-     vertical, em vez de ficarem fora da tela ou atrás do texto */
-  const MAGIC_RINGS_MOBILE = {
-    baseRadius: 0.62,
-    radiusStep: 0.09,
-    opacity: 0.9,
-    rotation: 90
-  };
-  const RINGS_MAX_DPR = 1.25;   // o brilho é suave: resolução menor não aparece e pesa bem menos
-
   const RINGS_VERTEX = [
     'attribute vec2 position;',
     'void main() { gl_Position = vec4(position, 0.0, 1.0); }'
@@ -476,14 +451,8 @@ void main() {
 
   function initMagicRings(mount, cfg) {
     const canvas = document.createElement('canvas');
-    const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false, powerPreference: 'low-power' });
-    if (!gl) return null;
-
-    /* Sem aceleração de vídeo (renderização por software), animar travaria a
-       página: nesse caso desenha só um quadro parado. */
-    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-    const rendererName = debugInfo ? String(gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)) : '';
-    const staticOnly = reduceMotion || /swiftshader|llvmpipe|software|basic render/i.test(rendererName);
+    const gl = canvas.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) return;
 
     function compile(type, source) {
       const shader = gl.createShader(type);
@@ -494,13 +463,13 @@ void main() {
 
     const vs = compile(gl.VERTEX_SHADER, RINGS_VERTEX);
     const fs = compile(gl.FRAGMENT_SHADER, RINGS_FRAGMENT);
-    if (!vs || !fs) return null;
+    if (!vs || !fs) return;
 
     const program = gl.createProgram();
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null;
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
     gl.useProgram(program);
 
     /* Quadro que cobre a tela inteira */
@@ -526,10 +495,13 @@ void main() {
     /* Valores fixos da configuração */
     gl.uniform1f(u.uAttenuation, cfg.attenuation);
     gl.uniform1f(u.uLineThickness, cfg.lineThickness);
-
+    gl.uniform1f(u.uBaseRadius, cfg.baseRadius);
+    gl.uniform1f(u.uRadiusStep, cfg.radiusStep);
     gl.uniform1f(u.uScaleRate, cfg.scaleRate);
     gl.uniform1i(u.uRingCount, cfg.ringCount);
+    gl.uniform1f(u.uOpacity, cfg.opacity);
     gl.uniform1f(u.uNoiseAmount, cfg.noiseAmount);
+    gl.uniform1f(u.uRotation, (cfg.rotation * Math.PI) / 180);
     gl.uniform1f(u.uRingGap, cfg.ringGap);
     gl.uniform1f(u.uFadeIn, cfg.fadeIn);
     gl.uniform1f(u.uFadeOut, cfg.fadeOut);
@@ -544,21 +516,14 @@ void main() {
     mount.appendChild(canvas);
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, RINGS_MAX_DPR);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const w = mount.clientWidth;
       const h = mount.clientHeight;
       canvas.width = Math.max(1, Math.round(w * dpr));
       canvas.height = Math.max(1, Math.round(h * dpr));
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform2f(u.uResolution, canvas.width, canvas.height);
-
-      /* Tamanho e força dos anéis conforme a largura */
-      const mobile = w < 720;
-      gl.uniform1f(u.uBaseRadius, mobile ? MAGIC_RINGS_MOBILE.baseRadius : cfg.baseRadius);
-      gl.uniform1f(u.uRadiusStep, mobile ? MAGIC_RINGS_MOBILE.radiusStep : cfg.radiusStep);
-      gl.uniform1f(u.uOpacity, mobile ? MAGIC_RINGS_MOBILE.opacity : cfg.opacity);
-      gl.uniform1f(u.uRotation, ((mobile ? MAGIC_RINGS_MOBILE.rotation : cfg.rotation) * Math.PI) / 180);
-      if (staticOnly) draw();
+      if (reduceMotion) draw();
     }
 
     /* Mouse: o hero inteiro é a área de interação (o conteúdo fica por cima) */
@@ -578,7 +543,7 @@ void main() {
     area.addEventListener('mouseleave', function () { hovered = false; mouse[0] = 0; mouse[1] = 0; });
     area.addEventListener('click', function () { burst = 1; });
 
-    let elapsed = staticOnly ? 1.2 : 0;
+    let elapsed = reduceMotion ? 1.2 : 0;
     let lastT = 0;
     let frameId = 0;
     let visible = false;
@@ -608,7 +573,7 @@ void main() {
     }
 
     function start() {
-      if (staticOnly || !visible || covered || !pageVisible || frameId) return;
+      if (reduceMotion || !visible || covered || !pageVisible || frameId) return;
       lastT = 0;
       frameId = requestAnimationFrame(animate);
     }
@@ -636,7 +601,7 @@ void main() {
       if (pageVisible) start(); else stop();
     });
 
-    if (staticOnly) draw(); else start();
+    if (reduceMotion) draw(); else start();
 
     return {
       /* Hero totalmente coberto pela seção seguinte: pausa o desenho */
@@ -647,18 +612,8 @@ void main() {
     };
   }
 
-  /* O efeito só começa depois do carregamento, quando o navegador está ocioso */
   const ringsMount = document.querySelector('[data-magic-rings]');
-  let rings = null;
-  if (ringsMount) {
-    afterLoad(function () {
-      whenIdle(function () {
-        rings = initMagicRings(ringsMount, MAGIC_RINGS);
-        const heroEl = document.querySelector('.hero');
-        if (rings && heroEl && heroEl.classList.contains('is-covered')) rings.setCovered(true);
-      });
-    });
-  }
+  const rings = ringsMount ? initMagicRings(ringsMount, MAGIC_RINGS) : null;
 
   /* ---------- Hero fixo coberto pela seção 2 ----------
      O hero fica parado (position: sticky) e a seção do vídeo sobe por cima,
@@ -684,7 +639,7 @@ void main() {
 
       /* Um único intervalo de saída para todos os elementos */
       exitEnd = Math.max(1, stickScroll + heroH * EXIT_SHARE);
-      requestAnimationFrame(heroUpdate);
+      heroUpdate();
     }
 
     function heroUpdate() {
@@ -705,7 +660,7 @@ void main() {
     }
 
     if (!reduceMotion) hero.classList.add('is-exit-ready');
-    afterLoad(heroLayout);
+    heroLayout();
     window.addEventListener('resize', heroLayout);
     window.addEventListener('scroll', function () {
       if (!heroTicking) {
@@ -715,39 +670,15 @@ void main() {
     }, { passive: true });
   }
 
-  /* ---------- Player do case: carrega sob demanda ----------
-     O vídeo (~6,7 MB) só começa a baixar quando a seção se aproxima da tela.
-     Até lá (ou se o arquivo faltar) aparece o estado vazio. */
+  /* ---------- Player do case: estado vazio até o arquivo existir ---------- */
 
   document.querySelectorAll('[data-player]').forEach(function (player) {
     const video = player.querySelector('video');
     if (!video) return;
 
     function ready() { player.classList.remove('is-empty'); }
+
+    if (video.readyState >= 1) ready();
     video.addEventListener('loadedmetadata', ready);
-
-    function loadVideo() {
-      let changed = false;
-      video.querySelectorAll('source[data-src]').forEach(function (source) {
-        source.src = source.getAttribute('data-src');
-        source.removeAttribute('data-src');
-        changed = true;
-      });
-      if (changed) {
-        video.preload = 'metadata';
-        video.load();
-      }
-    }
-
-    if ('IntersectionObserver' in window) {
-      const videoObserver = new IntersectionObserver(function (entries) {
-        if (!entries[0].isIntersecting) return;
-        videoObserver.disconnect();
-        loadVideo();
-      }, { rootMargin: '200px 0px' });
-      afterLoad(function () { videoObserver.observe(player); });
-    } else {
-      loadVideo();
-    }
   });
 })();

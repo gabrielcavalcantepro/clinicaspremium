@@ -1,0 +1,2 @@
+# Cloudflare Pages: as cópias de segurança locais não devem ficar acessíveis no site
+/_backup/*  /  301

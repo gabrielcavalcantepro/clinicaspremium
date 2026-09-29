@@ -586,21 +586,6 @@ button {
     rgba(4, 48, 52, 0.45);
 }
 
-/* Celular: os anéis passam em volta do texto (script.js aumenta o raio),
-   então o véu e a sombra podem ser mais leves e mais justos ao texto */
-@media (max-width: 719px) {
-  .hero__rings::after {
-    background:
-      radial-gradient(
-        ellipse 96vw 40vh at 50% 50%,
-        var(--bg) 0%,
-        rgba(4, 48, 52, 0.9) 50%,
-        rgba(4, 48, 52, 0) 100%
-      ),
-      rgba(4, 48, 52, 0.2);
-  }
-}
-
 /* Coberto pela seção seguinte: some de vez (o script também pausa o WebGL) */
 .hero.is-covered {
   visibility: hidden;
