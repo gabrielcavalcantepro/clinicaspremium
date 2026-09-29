@@ -1,0 +1,1604 @@
+/* ==========================================================================
+   Clínicas Premium — Landing page
+   Mobile-first. Peso máximo de fonte: 600 (semi-bold).
+   Linguagem visual: escala tipográfica firme, respiro generoso, superfícies
+   planas separadas pela troca de tom (sem gradientes decorativos nem sombras).
+   ========================================================================== */
+
+:root {
+  /* Cores: fundo e destaque do spec, tons de apoio derivados deles */
+  --bg: #043034;
+  --bg-deep: #032629;
+  --bg-raised: #073a3e;
+  --bg-raised-2: #0a4549;
+  --accent: #cec293;
+  --accent-hover: #d8cda2;
+  --text: #eeebe1;
+  --text-soft: #cfd6d1;
+  --text-muted: #a9bcb8;
+  --ink: #043034;
+  --ink-soft: #1d4a4c;
+  --hairline: rgba(206, 194, 147, 0.14);
+  --hairline-strong: rgba(206, 194, 147, 0.28);
+
+  /* Tipografia: fonte nativa do sistema, ladder 300 / 400 / 600 */
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --fs-hero: clamp(2rem, 1.1rem + 3.6vw, 3.5rem);        /* 32 → 56 */
+  --fs-display: clamp(1.75rem, 1.25rem + 1.6vw, 2.5rem); /* 28 → 40 */
+  --fs-lead: clamp(1.1875rem, 1.05rem + 0.5vw, 1.5rem);  /* 19 → 24 */
+  --fs-title: clamp(1.1875rem, 1.1rem + 0.35vw, 1.3125rem); /* 19 → 21 */
+  --fs-body: 1.0625rem;                                  /* 17 */
+  --fs-caption: 0.875rem;                                /* 14 */
+  --lh-hero: 1.07;
+  --lh-display: 1.1;
+  --lh-lead: 1.42;
+  --lh-body: 1.5;
+  --ls-hero: -0.015em;
+  --ls-display: -0.012em;
+  --ls-body: -0.005em;
+
+  /* Espaço: base 8px */
+  --container: 1120px;
+  --gutter: 20px;
+  --section-space: clamp(88px, 9vw + 40px, 144px);
+  --gap-head: clamp(48px, 5vw, 64px);   /* título → conteúdo */
+  --gap-cta: clamp(48px, 5vw, 64px);    /* conteúdo → botão */
+  --gap-support: 20px;                  /* título → texto de apoio */
+
+  /* Forma: um raio para superfícies, pill para ações e chips */
+  --radius: 20px;
+  --radius-sm: 8px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* ---------- Reset e base ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 96px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: var(--fs-body);
+  font-weight: 400;
+  line-height: var(--lh-body);
+  letter-spacing: var(--ls-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-synthesis: none;
+  overflow-x: hidden;
+}
+
+/* Nenhum texto acima de semi-bold: sobrescreve os pesos padrão do navegador */
+h1, h2, h3, h4, h5, h6,
+b, strong, th, dt, summary, legend, optgroup {
+  font-weight: 600;
+}
+
+h1, h2, h3, h4, h5, h6, p, ul, ol, dl, dd, figure {
+  margin: 0;
+}
+
+ul, ol {
+  padding: 0;
+  list-style: none;
+}
+
+img, svg, video {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 100;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 16px;
+}
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.container--narrow {
+  max-width: calc(820px + var(--gutter) * 2);
+}
+
+.section {
+  padding-block: var(--section-space);
+}
+
+/* Títulos de seção: uma única escala para a página inteira */
+.case__title,
+.pain__title,
+.effort__phrase,
+.solution__main,
+.how__title,
+.consultant__name,
+.offer__title,
+.faq__title,
+.closing__title {
+  font-size: var(--fs-display);
+  font-weight: 600;
+  line-height: var(--lh-display);
+  letter-spacing: var(--ls-display);
+  text-wrap: balance;
+}
+
+/* ---------- Botão (único estilo da página) ---------- */
+
+.section-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--gap-cta);
+}
+
+.cta {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 64px;
+  padding: 7px 7px 7px 32px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--ink);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  isolation: isolate;
+  /* halo dourado: destaca o botão sobre o fundo escuro */
+  box-shadow:
+    0 0 0 1px rgba(206, 194, 147, 0.35),
+    0 14px 40px -14px rgba(206, 194, 147, 0.6);
+  transition:
+    background-color 0.25s var(--ease),
+    box-shadow 0.25s var(--ease),
+    transform 0.25s var(--ease);
+}
+
+/* Brilho que atravessa o botão ao passar o mouse */
+.cta::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.38) 50%, transparent 65%);
+  transform: translateX(-120%);
+}
+
+.cta__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--accent);
+  transition: transform 0.35s var(--ease);
+}
+
+/* Seta e WhatsApp ocupam o mesmo lugar; o hover troca um pelo outro */
+.cta__icon svg {
+  grid-area: 1 / 1;
+  transition:
+    transform 0.45s cubic-bezier(0.5, 0, 0.2, 1),
+    opacity 0.3s var(--ease);
+}
+
+/* Seta quadrada (largura = altura), um pouco menor que o WhatsApp */
+.cta__arrow {
+  width: 17px;
+  height: 17px;
+}
+
+.cta__whats {
+  width: 21px;
+  height: 21px;
+  opacity: 0;
+  transform: translateX(-160%) rotate(-90deg) scale(0.6);
+}
+
+.cta:hover .cta__arrow,
+.cta:focus-visible .cta__arrow {
+  opacity: 0;
+  transform: translateX(160%);
+}
+
+.cta:hover .cta__whats,
+.cta:focus-visible .cta__whats {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.08s;
+}
+
+.cta:hover .cta__icon,
+.cta:focus-visible .cta__icon {
+  transform: scale(1.06);
+}
+
+.cta:hover {
+  background: var(--accent-hover);
+  box-shadow:
+    0 0 0 1px rgba(206, 194, 147, 0.5),
+    0 18px 48px -14px rgba(206, 194, 147, 0.8);
+  transform: translateY(-2px);
+}
+
+.cta:active {
+  transform: scale(0.97);
+}
+
+.cta:focus-visible {
+  outline-offset: 5px;
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta__icon,
+  .cta__icon svg {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .cta:hover::after {
+    transform: translateX(120%);
+    transition: transform 0.8s var(--ease);
+  }
+}
+
+@media (max-width: 480px) {
+  .cta {
+    gap: 12px;
+    min-height: 58px;
+    padding-left: 24px;
+    font-size: 1.0625rem;
+  }
+
+  .cta__icon {
+    width: 46px;
+    height: 46px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cta {
+    gap: 8px;
+    padding-left: 18px;
+    font-size: 0.9375rem;
+  }
+
+  .cta__icon {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+/* ---------- Listas com divisórias: linha só ENTRE itens ---------- */
+
+.divided > li + li {
+  border-top: 1px solid var(--hairline);
+}
+
+/* ---------- Cabeçalho ---------- */
+
+.site-header {
+  position: fixed;
+  top: 12px;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding-inline: 12px;
+  pointer-events: none;
+}
+
+.nav {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: var(--container);
+  min-height: 60px;
+  margin-inline: auto;
+  padding: 8px 8px 8px 18px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: rgba(3, 38, 41, 0.72);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  pointer-events: auto;
+}
+
+.nav__brand {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+}
+
+.nav__brand img {
+  width: 34px;
+  height: 37px;
+}
+
+.nav__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Atalho do WhatsApp: só o círculo com o ícone */
+.nav__whatsapp {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--ink);
+  transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
+}
+
+.nav__whatsapp:hover {
+  background: var(--accent-hover);
+}
+
+.nav__whatsapp:active {
+  transform: scale(0.95);
+}
+
+.nav__whatsapp:focus-visible {
+  border-radius: 50%;
+}
+
+.nav__toggle {
+  display: grid;
+  place-content: center;
+  gap: 6px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease);
+}
+
+.nav__toggle:active {
+  transform: scale(0.95);
+}
+
+.nav__toggle:focus-visible {
+  border-radius: 50%;
+}
+
+.nav__toggle-bar {
+  display: block;
+  width: 18px;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 0.25s var(--ease);
+}
+
+.nav__toggle[aria-expanded="true"] .nav__toggle-bar:first-child {
+  transform: translateY(3.75px) rotate(45deg);
+}
+
+.nav__toggle[aria-expanded="true"] .nav__toggle-bar:last-child {
+  transform: translateY(-3.75px) rotate(-45deg);
+}
+
+.nav__links {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  display: none;
+  padding: 8px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: var(--bg-deep);
+}
+
+.nav__links.is-open {
+  display: block;
+}
+
+.nav__links a {
+  display: block;
+  padding: 14px 16px;
+  border-radius: 12px;
+  color: var(--text-soft);
+  font-size: var(--fs-body);
+  text-decoration: none;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.nav__links a:hover,
+.nav__links a.is-active {
+  color: var(--accent);
+}
+
+.nav__links li + li {
+  border-top: 1px solid var(--hairline);
+}
+
+@media (min-width: 860px) {
+  .site-header {
+    top: 18px;
+    padding-inline: 24px;
+  }
+
+  .nav {
+    padding: 8px 8px 8px 22px;
+  }
+
+  .nav__toggle {
+    display: none;
+  }
+
+  /* Menu centralizado no cabeçalho, independente da largura da logo */
+  .nav__links,
+  .nav__links.is-open {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .nav__links li + li {
+    border-top: 0;
+  }
+
+  .nav__links a {
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: var(--fs-caption);
+  }
+
+  .nav__links a:hover,
+  .nav__links a.is-active {
+    background: rgba(206, 194, 147, 0.08);
+  }
+}
+
+/* ---------- 1. Hero (estático, sem animação) ---------- */
+
+.hero {
+  display: flex;
+  align-items: center;
+  min-height: 92vh;
+  min-height: 92svh;
+  padding-top: 144px;
+  padding-bottom: 112px;
+  text-align: center;
+  background: var(--bg);
+}
+
+.hero__inner {
+  max-width: calc(900px + var(--gutter) * 2);
+}
+
+.hero__title {
+  font-size: var(--fs-hero);
+  font-weight: 600;
+  line-height: var(--lh-hero);
+  letter-spacing: var(--ls-hero);
+  text-wrap: balance;
+}
+
+.hero__title-accent {
+  display: block;
+  margin-top: 0.1em;
+  color: var(--accent);
+}
+
+.hero__lead {
+  max-width: 640px;
+  margin: 24px auto 0;
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: pretty;
+}
+
+.hero .section-cta {
+  margin-top: 40px;
+}
+
+/* ---------- 2. Depoimento em vídeo ---------- */
+
+.case {
+  background: var(--bg-deep);
+}
+
+.case__title {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.case__figure {
+  max-width: 920px;
+  margin: var(--gap-head) auto 0;
+}
+
+.player {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  background: #021e21;
+}
+
+.player__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #021e21;
+}
+
+.player__empty {
+  position: absolute;
+  inset: 0;
+  display: none;
+  place-items: center;
+  background: var(--bg-raised);
+}
+
+.player.is-empty .player__video {
+  visibility: hidden;
+}
+
+.player.is-empty .player__empty {
+  display: grid;
+}
+
+.player__ring {
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  padding-left: 4px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  color: var(--accent);
+}
+
+.case__caption {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+}
+
+.case__name {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* ---------- 3. Exploração da dor ---------- */
+
+.pain__grid {
+  display: grid;
+  gap: var(--gap-head);
+}
+
+.pain__text {
+  max-width: 460px;
+  margin-top: var(--gap-support);
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+}
+
+.pain__lead {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-size: var(--fs-body);
+  font-weight: 600;
+}
+
+.pain__list li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  color: var(--text-soft);
+  font-size: var(--fs-body);
+}
+
+.pain__icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  color: var(--accent);
+}
+
+.pain__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+@media (min-width: 900px) {
+  .pain__grid {
+    grid-template-columns: 5fr 6fr;
+    gap: 96px;
+    align-items: start;
+  }
+
+  .pain__intro {
+    position: sticky;
+    top: 128px;
+  }
+
+  .pain__lead {
+    margin-top: 8px;
+  }
+}
+
+/* Destaque “Esforço máximo, retorno mínimo.” */
+
+.effort {
+  margin-top: calc(var(--gap-head) * 1.5);
+  padding: clamp(32px, 6vw, 80px);
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.effort__statement {
+  display: grid;
+  gap: clamp(24px, 3vw, 40px);
+}
+
+.effort__row {
+  display: grid;
+  gap: 16px;
+}
+
+/* Barra de carregamento: trilho, preenchimento e círculo com ícone na ponta */
+.effort__bar {
+  --knob: 40px;
+  --fill: 100%;
+  position: relative;
+  display: block;
+  height: 10px;
+  margin-block: calc((var(--knob) - 10px) / 2);
+  border-radius: 999px;
+  background: rgba(4, 48, 52, 0.14);
+}
+
+.effort__bar--min {
+  --fill: 9%;
+}
+
+.effort__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: max(var(--fill), var(--knob));
+  border-radius: inherit;
+  background: var(--ink);
+}
+
+.effort__knob {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  display: grid;
+  place-items: center;
+  width: var(--knob);
+  height: var(--knob);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent);
+  transform: translateY(-50%);
+}
+
+.effort__knob svg {
+  width: 19px;
+  height: 19px;
+}
+
+/* Animação de entrada (ativada pelo script.js quando o bloco aparece na tela) */
+.effort.is-armed .effort__fill {
+  width: var(--knob);
+}
+
+.effort.is-armed.is-loaded .effort__bar--full .effort__fill {
+  width: max(var(--fill), var(--knob));
+  transition: width 1.6s cubic-bezier(0.45, 0, 0.2, 1) 0.15s;
+}
+
+/* O retorno avança devagar e empaca cedo */
+.effort.is-armed.is-loaded .effort__bar--min .effort__fill {
+  width: max(var(--fill), var(--knob));
+  transition: width 1.8s cubic-bezier(0.2, 0.8, 0.3, 1) 0.6s;
+}
+
+.effort__support {
+  max-width: 620px;
+  margin-top: clamp(32px, 4vw, 48px);
+  color: var(--ink-soft);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: balance;
+}
+
+/* Desktop: cada frase numa linha, barras alinhadas na mesma coluna */
+@media (min-width: 900px) {
+  .effort__statement {
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    column-gap: clamp(32px, 4vw, 56px);
+  }
+
+  .effort__row {
+    display: contents;
+  }
+
+  .effort__phrase {
+    white-space: nowrap;
+  }
+
+  .effort__support {
+    margin-inline: auto;
+    text-align: center;
+  }
+}
+
+/* ---------- 4. Solução + C.A.V.A ---------- */
+
+.solution {
+  background: var(--bg-deep);
+}
+
+.solution__head {
+  max-width: 820px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.solution__main {
+  display: block;
+}
+
+.solution__text {
+  max-width: 680px;
+  margin: var(--gap-support) auto 0;
+  color: var(--text-soft);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: pretty;
+}
+
+/* Painel do C.A.V.A: elemento de apoio, centralizado no mesmo eixo da seção */
+.solution__body {
+  max-width: 920px;
+  margin: var(--gap-head) auto 0;
+}
+
+.cava__intro {
+  margin-bottom: 20px;
+  color: var(--text-muted);
+  font-size: var(--fs-caption);
+  text-align: center;
+}
+
+/* Os quatro blocos formam um quadrado de cantos arredondados,
+   como as peças do símbolo da marca. */
+.cava {
+  display: grid;
+  gap: 6px;
+}
+
+.cava__cell {
+  padding: 28px;
+  border-radius: 6px;
+  background: var(--bg-raised);
+}
+
+.cava__cell:first-child {
+  border-top-left-radius: 32px;
+  border-top-right-radius: 32px;
+}
+
+.cava__cell:last-child {
+  border-bottom-left-radius: 32px;
+  border-bottom-right-radius: 32px;
+}
+
+.cava__term {
+  display: flex;
+  align-items: baseline;
+  color: var(--text);
+  font-size: var(--fs-title);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+}
+
+.cava__initial {
+  margin-right: 1px;
+  color: var(--accent);
+  font-size: 3.25rem;
+  font-weight: 600;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+
+.cava__desc {
+  margin-top: 8px;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+}
+
+.solution__closing {
+  max-width: 640px;
+  margin: var(--gap-head) auto 0;
+  color: var(--text);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-align: center;
+  text-wrap: balance;
+}
+
+@media (min-width: 640px) {
+  .cava {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cava__cell,
+  .cava__cell:first-child,
+  .cava__cell:last-child {
+    border-radius: 6px;
+  }
+
+  .cava__cell:nth-child(1) { border-top-left-radius: 40px; }
+  .cava__cell:nth-child(2) { border-top-right-radius: 40px; }
+  .cava__cell:nth-child(3) { border-bottom-left-radius: 40px; }
+  .cava__cell:nth-child(4) { border-bottom-right-radius: 40px; }
+
+  .cava__cell {
+    padding: 36px 40px 40px;
+  }
+}
+
+/* ---------- 5. Como funciona: funil ---------- */
+
+.how__head {
+  max-width: 720px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.how__support {
+  margin-top: var(--gap-support);
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+}
+
+/*
+  Cada faixa é um trapézio. A largura de cada faixa (--w) e da seguinte (--wn)
+  são porcentagens do funil; a inclinação lateral (--s) faz a base de uma faixa
+  coincidir com o topo da próxima, formando um funil contínuo.
+*/
+.funnel {
+  container-type: inline-size;
+  position: relative;
+  z-index: 0;
+  isolation: isolate;
+  display: grid;
+  gap: 6px;
+  max-width: 800px;
+  margin: var(--gap-head) auto 0;
+}
+
+.funnel__step {
+  --s: calc((var(--w) - var(--wn)) / 2 * 1cqi);
+  position: relative;
+  width: calc(var(--w) * 1cqi);
+  margin-inline: auto;
+  text-align: center;
+}
+
+.funnel__step::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--band);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--s)) 100%, var(--s) 100%);
+}
+
+.funnel__step--1 { --w: 100; --wn: 92; --band: rgba(206, 194, 147, 0.08); }
+.funnel__step--2 { --w: 92;  --wn: 84; --band: rgba(206, 194, 147, 0.15); }
+.funnel__step--3 { --w: 84;  --wn: 76; --band: rgba(206, 194, 147, 0.25); }
+.funnel__step--4 { --w: 76;  --wn: 68; --band: var(--accent); color: var(--ink); }
+
+.funnel__step:first-child::before {
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+}
+
+.funnel__content {
+  padding: 22px calc(var(--s) + 18px) 24px;
+}
+
+.funnel__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 12px;
+}
+
+.funnel__num {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--accent);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.funnel__name {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+}
+
+.funnel__tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+}
+
+.funnel__desc {
+  max-width: 520px;
+  margin: 8px auto 0;
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.funnel__step--1 .funnel__desc {
+  color: var(--text-muted);
+}
+
+.funnel__step--4 .funnel__num {
+  background: var(--ink);
+  color: var(--accent);
+}
+
+.funnel__step--4 .funnel__tag {
+  border-color: rgba(4, 48, 52, 0.4);
+  color: var(--ink);
+}
+
+.funnel__step--4 .funnel__desc {
+  color: var(--ink-soft);
+}
+
+@media (min-width: 720px) {
+  .funnel__step--1 { --w: 100; --wn: 86; }
+  .funnel__step--2 { --w: 86;  --wn: 72; }
+  .funnel__step--3 { --w: 72;  --wn: 58; }
+  .funnel__step--4 { --w: 58;  --wn: 44; }
+
+  .funnel__content {
+    padding: 22px calc(var(--s) + 24px) 24px;
+  }
+}
+
+/* Funil animado pela rolagem (classes aplicadas pelo script.js).
+   Sem JS ou com movimento reduzido, o funil aparece completo e estático.
+   Tudo é feito com opacidade e transform: nada muda de tamanho, então a
+   página não "pula" enquanto as etapas aparecem. */
+
+.how.is-animated .funnel__step {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+
+.how.is-animated .funnel__step.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Com a etapa recém-surgida, o título fica centralizado na faixa;
+   quando o parágrafo entra, ele sobe para o lugar. */
+.how.is-animated .funnel__top {
+  transform: translateY(var(--shift, 0px));
+  transition: transform 0.6s var(--ease);
+}
+
+.how.is-animated .funnel__desc {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s var(--ease) 0.1s, transform 0.5s var(--ease) 0.1s;
+}
+
+.how.is-animated .funnel__step.is-open .funnel__top {
+  transform: none;
+}
+
+.how.is-animated .funnel__step.is-open .funnel__desc {
+  opacity: 1;
+  transform: none;
+}
+
+/* Modo fixo (desktop): a seção inteira (título, funil e botão) gruda na tela.
+   A trilha cria o espaço de rolagem; o palco ocupa a altura da tela e o
+   quadro é escalado pelo script.js para caber nela. */
+.how.is-pinned {
+  padding-block: 0;
+}
+
+.how.is-pinned .how__track {
+  height: var(--track-h, 320vh);
+}
+
+.how.is-pinned .how__stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding-top: var(--stage-top, 88px);
+  padding-bottom: 24px;
+}
+
+/* Só título e funil são escalados; o botão mantém o tamanho padrão */
+.how.is-pinned .how__frame {
+  width: 100%;
+  zoom: var(--fit, 1);
+}
+
+.how.is-pinned .funnel {
+  margin-top: 44px;
+}
+
+.how.is-pinned .funnel__content {
+  padding-top: 16px;
+  padding-bottom: 18px;
+}
+
+.how.is-pinned .how__support {
+  margin-top: 12px;
+}
+
+.how.is-pinned .section-cta {
+  margin-top: 44px;
+}
+
+/* ---------- 6. Com x Sem ---------- */
+
+.compare {
+  background: var(--bg-deep);
+}
+
+.compare__grid {
+  display: grid;
+  gap: 16px;
+}
+
+.compare__col {
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: var(--radius);
+}
+
+.compare__col--without {
+  border: 1px solid var(--hairline);
+}
+
+.compare__col--with {
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg-raised);
+}
+
+.compare__title {
+  margin-bottom: 12px;
+  font-size: var(--fs-title);
+  font-weight: 600;
+  letter-spacing: var(--ls-display);
+}
+
+.compare__col--without .compare__title {
+  color: var(--text-muted);
+}
+
+.compare__col--with .compare__title {
+  color: var(--accent);
+}
+
+.compare__list li {
+  position: relative;
+  padding: 18px 0 18px 32px;
+  font-size: var(--fs-body);
+}
+
+.compare__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: calc(18px + 0.75em - 9px);
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.compare__col--without .compare__list li {
+  color: var(--text-muted);
+}
+
+.compare__col--without .compare__list li::before {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M6 6l8 8M14 6l-8 8' stroke='black' stroke-width='1.6' stroke-linecap='round' fill='none'/%3E%3C/svg%3E");
+  color: rgba(169, 188, 184, 0.7);
+}
+
+.compare__col--with .compare__list li {
+  color: var(--text);
+}
+
+.compare__col--with .compare__list li::before {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M4.5 10.5l3.5 3.5 7.5-8' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  color: var(--accent);
+}
+
+@media (min-width: 860px) {
+  .compare__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    align-items: stretch;
+  }
+}
+
+/* ---------- 7. Consultor ---------- */
+
+.consultant__card {
+  display: grid;
+  gap: 40px;
+  max-width: 980px;
+  margin-inline: auto;
+}
+
+.consultant__photo {
+  position: relative;
+  width: 100%;
+  max-width: 260px;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 180px 180px var(--radius) var(--radius);
+  background: var(--bg-raised);
+  border: 1px solid var(--hairline);
+}
+
+.consultant__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.consultant__placeholder {
+  display: grid;
+  place-items: end center;
+  height: 100%;
+  color: rgba(206, 194, 147, 0.16);
+}
+
+.consultant__placeholder svg {
+  width: 72%;
+  height: auto;
+}
+
+.consultant__role {
+  margin-top: 8px;
+  color: var(--accent);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.consultant__bio {
+  margin-top: 24px;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+}
+
+/* Recado em primeira pessoa: leitura leve (peso 300) */
+.consultant__note {
+  margin-top: 32px;
+  color: var(--text);
+  font-size: var(--fs-lead);
+  font-weight: 300;
+  line-height: var(--lh-lead);
+}
+
+@media (min-width: 820px) {
+  .consultant__photo {
+    max-width: 360px;
+  }
+
+  .consultant__card {
+    grid-template-columns: 360px 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+}
+
+/* ---------- 8. CTA objetiva ---------- */
+
+.offer {
+  background: var(--bg-deep);
+}
+
+.offer__head {
+  max-width: 760px;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.offer__text {
+  margin-top: var(--gap-support);
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: pretty;
+}
+
+.offer__grid {
+  display: grid;
+  gap: 16px;
+  max-width: 980px;
+  margin: var(--gap-head) auto 0;
+}
+
+.offer__card {
+  padding: clamp(28px, 4vw, 44px);
+  border-radius: var(--radius);
+}
+
+.offer__card p {
+  margin-top: 12px;
+  font-size: var(--fs-body);
+}
+
+.offer__card--freedom {
+  border: 1px solid var(--hairline-strong);
+  background: var(--bg-raised);
+}
+
+.offer__card--freedom p {
+  color: var(--text-soft);
+}
+
+.offer__card--scarcity {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+.offer__card--scarcity p {
+  color: var(--ink);
+}
+
+.offer__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  border: 1px solid var(--hairline-strong);
+  color: var(--accent);
+}
+
+.offer__card--scarcity .offer__icon {
+  border-color: rgba(4, 48, 52, 0.3);
+  color: var(--ink);
+}
+
+.offer__card-title {
+  font-size: clamp(1.3125rem, 1.2rem + 0.5vw, 1.5rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: var(--ls-display);
+}
+
+@media (min-width: 820px) {
+  .offer__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+}
+
+/* ---------- 9. FAQ ---------- */
+
+.faq__title {
+  margin-bottom: var(--gap-head);
+  text-align: center;
+}
+
+.faq__item + .faq__item {
+  border-top: 1px solid var(--hairline);
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px 0;
+  cursor: pointer;
+  list-style: none;
+  border-radius: var(--radius-sm);
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__q-text {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: var(--ls-display);
+  transition: color 0.2s;
+}
+
+.faq__q:hover .faq__q-text {
+  color: var(--accent);
+}
+
+.faq__icon {
+  position: relative;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 50%;
+  transition: background-color 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.faq__icon::before,
+.faq__icon::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 12px;
+  height: 1.5px;
+  margin: -0.75px 0 0 -6px;
+  border-radius: 2px;
+  background: var(--accent);
+  transition: transform 0.3s var(--ease), background-color 0.25s;
+}
+
+.faq__icon::after {
+  transform: rotate(90deg);
+}
+
+.faq__item[open]:not(.is-closing) .faq__icon {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.faq__item[open]:not(.is-closing) .faq__icon::before,
+.faq__item[open]:not(.is-closing) .faq__icon::after {
+  background: var(--ink);
+}
+
+.faq__item[open]:not(.is-closing) .faq__icon::after {
+  transform: rotate(0deg);
+}
+
+.faq__a {
+  padding: 0 56px 0 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+}
+
+/* O espaço inferior fica no parágrafo para a altura poder chegar a zero */
+.faq__a p {
+  padding-bottom: 28px;
+}
+
+/* Perguntas entram em sequência quando a lista aparece (script.js) */
+.faq.is-animated .faq__item {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.55s var(--ease) calc(var(--i, 0) * 80ms),
+    transform 0.55s var(--ease) calc(var(--i, 0) * 80ms);
+}
+
+.faq.is-animated.is-visible .faq__item {
+  opacity: 1;
+  transform: none;
+}
+
+@media (max-width: 560px) {
+  .faq__a {
+    padding-right: 0;
+  }
+}
+
+/* ---------- 10. Resumo + CTA final ---------- */
+
+.closing {
+  text-align: center;
+  background: var(--bg-deep);
+}
+
+.closing__inner {
+  max-width: calc(860px + var(--gutter) * 2);
+}
+
+.closing__title-muted {
+  color: var(--text-muted);
+}
+
+.closing__text {
+  max-width: 640px;
+  margin: var(--gap-support) auto 0;
+  color: var(--text-soft);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: pretty;
+}
+
+.closing__final {
+  max-width: 680px;
+  margin: 32px auto 0;
+  color: var(--text-muted);
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  text-wrap: balance;
+}
+
+.closing__final-accent {
+  color: var(--accent);
+}
+
+/* ---------- 11. Rodapé ---------- */
+
+/* Faixa fina de vidro fosco, sobreposta ao fim da última seção. */
+.site-footer {
+  --footer-h: 52px;
+  position: relative;
+  z-index: 1;
+  margin-top: calc(var(--footer-h) * -1);
+  border-top: 1px solid var(--hairline);
+  background: rgba(4, 48, 52, 0.4);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.closing {
+  padding-bottom: calc(var(--section-space) + 52px);
+}
+
+.site-footer__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--footer-h);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+}
+
+/* ---------- Movimento discreto fora do hero ---------- */
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 30%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
