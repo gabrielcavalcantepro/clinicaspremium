@@ -40,7 +40,7 @@
   /* Espaço: base 8px */
   --container: 1120px;
   --gutter: 20px;
-  --section-space: clamp(64px, 4vw + 40px, 96px);   /* era até 144px */
+  --section-space: clamp(88px, 9vw + 40px, 144px);
   --gap-head: clamp(48px, 5vw, 64px);   /* título → conteúdo */
   --gap-cta: clamp(48px, 5vw, 64px);    /* conteúdo → botão */
   --gap-support: 20px;                  /* título → texto de apoio */
@@ -171,7 +171,6 @@ button {
 .solution__main,
 .how__title,
 .consultant__name,
-.team__title,
 .offer__title,
 .faq__title,
 .closing__title {
@@ -262,53 +261,30 @@ button {
   transform: translateX(-160%) rotate(-90deg) scale(0.6);
 }
 
+.cta:hover .cta__arrow,
 .cta:focus-visible .cta__arrow {
   opacity: 0;
   transform: translateX(160%);
 }
 
+.cta:hover .cta__whats,
 .cta:focus-visible .cta__whats {
   opacity: 1;
   transform: none;
   transition-delay: 0.08s;
 }
 
+.cta:hover .cta__icon,
 .cta:focus-visible .cta__icon {
   transform: scale(1.06);
 }
 
-/* Efeitos de hover só em aparelhos com mouse. No iPhone, um hover que muda o
-   conteúdo do link (a troca de ícone) faz o Safari exigir dois toques. */
-@media (hover: hover) and (pointer: fine) {
-  .cta:hover .cta__arrow {
-    opacity: 0;
-    transform: translateX(160%);
-  }
-
-  .cta:hover .cta__whats {
-    opacity: 1;
-    transform: none;
-    transition-delay: 0.08s;
-  }
-
-  .cta:hover .cta__icon {
-    transform: scale(1.06);
-  }
-
-  .cta:hover {
-    background: var(--accent-hover);
-    box-shadow:
-      0 0 0 1px rgba(206, 194, 147, 0.5),
-      0 18px 48px -14px rgba(206, 194, 147, 0.8);
-    transform: translateY(-2px);
-  }
-}
-
-/* Toque responde na hora (sem esperar um possível toque duplo) */
-a,
-button,
-summary {
-  touch-action: manipulation;
+.cta:hover {
+  background: var(--accent-hover);
+  box-shadow:
+    0 0 0 1px rgba(206, 194, 147, 0.5),
+    0 18px 48px -14px rgba(206, 194, 147, 0.8);
+  transform: translateY(-2px);
 }
 
 .cta:active {
@@ -327,7 +303,7 @@ summary {
   }
 }
 
-@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) {
+@media (prefers-reduced-motion: no-preference) {
   .cta:hover::after {
     transform: translateX(120%);
     transition: transform 0.8s var(--ease);
@@ -425,10 +401,8 @@ summary {
   transition: background-color 0.2s var(--ease), transform 0.2s var(--ease);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .nav__whatsapp:hover {
-    background: var(--accent-hover);
-  }
+.nav__whatsapp:hover {
+  background: var(--accent-hover);
 }
 
 .nav__whatsapp:active {
@@ -1431,83 +1405,6 @@ main > section:not(.hero) {
   }
 }
 
-/* ---------- Conheça a equipe ---------- */
-
-/* Mesmo fundo do consultor logo abaixo: as duas formam um bloco só */
-.team {
-  background: var(--bg-deep);
-  padding-bottom: clamp(40px, 5vw, 64px);
-}
-
-.team + .consultant {
-  padding-top: clamp(40px, 5vw, 64px);
-}
-
-.team__title {
-  text-align: center;
-}
-
-/* Celular: faixa que desliza para o lado; desktop: três colunas */
-.team__list {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: min(70vw, 280px);
-  gap: 16px;
-  margin: var(--gap-head) calc(var(--gutter) * -1) 0;
-  padding: 0 var(--gutter) 8px;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: var(--gutter);
-  scrollbar-width: none;
-}
-
-.team__list::-webkit-scrollbar {
-  display: none;
-}
-
-.team__member {
-  scroll-snap-align: start;
-}
-
-.team__photo {
-  aspect-ratio: 3 / 4;
-  overflow: hidden;
-  border-radius: var(--radius);
-  background: var(--bg-raised);
-}
-
-.team__photo img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-/* Legenda no mesmo estilo dos depoimentos */
-.team__caption {
-  margin-top: 16px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: var(--fs-caption);
-}
-
-.team__name {
-  color: var(--text);
-  font-weight: 600;
-}
-
-@media (min-width: 900px) {
-  .team__list {
-    grid-auto-flow: row;
-    grid-template-columns: repeat(3, 300px);
-    grid-auto-columns: auto;
-    justify-content: center;
-    gap: 32px;
-    margin-inline: 0;
-    padding: 0;
-    overflow: visible;
-  }
-}
-
 /* ---------- 7. Consultor ---------- */
 
 .consultant {
@@ -1726,10 +1623,8 @@ main > section:not(.hero) {
   transition: color 0.2s;
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .faq__q:hover .faq__q-text {
-    color: var(--accent);
-  }
+.faq__q:hover .faq__q-text {
+  color: var(--accent);
 }
 
 .faq__icon {
